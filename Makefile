@@ -1,0 +1,3 @@
+
+run:
+	node ./exe/www
