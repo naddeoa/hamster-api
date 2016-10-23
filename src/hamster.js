@@ -16,6 +16,10 @@ const getCall = (apiGetter) => () => hamsterApi().then(api => Promise.denodeify(
 const getTagsCall = getCall(api => api.GetTags.bind(api, true));
 const getActivitiesCall = getCall(api => api.GetActivities.bind(api));
 const getTodaysFactsCall = getCall(api => api.GetTodaysFacts.bind(api));
+const addFact = getCall(api => api.AddFact.bind(api));
+
+const tagListToTagString = tag => `#${tag} `;
+const factToFactString = fact => `${fact.activity}@${fact.category}, ${fact.tags.map(tagListToTagString)}`;
 
 class Hamster {
 
@@ -30,7 +34,7 @@ class Hamster {
     getActivities(searchTerm) {
         return getActivitiesCall()
           .then(activitiesCall => activitiesCall(searchTerm || ''))
-          .then(activities => activities.map(activity => ({activity: activity[0], category: activity[1]})))
+          .then(activities => activities.map(activity => ({name: activity[0], category: activity[1]})))
           .catch(err => err);
     }
 
@@ -39,13 +43,13 @@ class Hamster {
           .then(factsCall => factsCall())
           .then(facts => {
               return facts.map(fact => ({
-                  entryId: fact[0],
-                  nameCategoryId: fact[5],
+                  id: fact[0],
+                  activityId: fact[5],
                   startEpoch: fact[1],
                   endEpoch: fact[2],
                   totalSeconds: fact[9],
                   description: fact[3],
-                  activity: fact[4],
+                  name: fact[4],
                   category: fact[6],
                   tags: fact[7],
                   dayStart: fact[8]
@@ -60,6 +64,13 @@ class Hamster {
           .then(tags => tags.map(tagResult => ({id: tagResult[0], name: tagResult[1]})))
           .catch(err => err);
 
+    }
+
+    addFact(fact) {
+        return addFact()
+          .then(factCall => factCall(factToFactString(fact), fact.startTime, fact.endTime, false))
+          .then(response => ({id: response}))
+          .catch(err => err);
     }
 
     static api(){

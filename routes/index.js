@@ -30,6 +30,12 @@ router.route('/api').get((req, res, next) => {
     Hamster.api().then(api => res.status(200).send(Object.keys(api)));
 });
 
+router.route('/facts/add/').post((req, res, next) => {
+    const fact = req.body;
+    res.header("Access-Control-Allow-Origin", "*");
+    hamster.addFact(fact).then(factResponse => res.status(200).send(factResponse));
+});
+
 router.route('*').get((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.status(404).send();
