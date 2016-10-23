@@ -15,6 +15,7 @@ const hamsterApi = Promise.denodeify(hamsterService.getInterface.bind(hamsterSer
 const getCall = (apiGetter) => () => hamsterApi().then(api => Promise.denodeify(apiGetter(api)));
 const getTagsCall = getCall(api => api.GetTags.bind(api, true));
 const getActivitiesCall = getCall(api => api.GetActivities.bind(api));
+const getTodaysFactsCall = getCall(api => api.GetTodaysFacts.bind(api));
 
 class Hamster {
 
@@ -29,7 +30,27 @@ class Hamster {
     getActivities(searchTerm) {
         return getActivitiesCall()
           .then(activitiesCall => activitiesCall(searchTerm || ''))
-          .then(activities => activities.map(activity => ({description: activity[0], category: activity[1]})))
+          .then(activities => activities.map(activity => ({activity: activity[0], category: activity[1]})))
+          .catch(err => err);
+    }
+
+    getTodaysFacts() {
+        return getTodaysFactsCall()
+          .then(factsCall => factsCall())
+          .then(facts => {
+              return facts.map(fact => ({
+                  entryId: fact[0],
+                  nameCategoryId: fact[5],
+                  startEpoch: fact[1],
+                  endEpoch: fact[2],
+                  totalSeconds: fact[9],
+                  description: fact[3],
+                  activity: fact[4],
+                  category: fact[6],
+                  tags: fact[7],
+                  dayStart: fact[8]
+              }))
+          })
           .catch(err => err);
     }
 

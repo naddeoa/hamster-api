@@ -13,6 +13,10 @@ router.route('/activities/:searchTerm?').get((req, res, next) => {
     hamster.getActivities(req.searchTerm).then(activities => res.status(200).send(activities));
 });
 
+router.route('/facts/today').get((req, res, next) => {
+    hamster.getTodaysFacts().then(facts => res.status(200).send(facts));
+});
+
 router.route('/tags/:tagName').post((req, res, next) => {
     hamster.getTags().then(tags => res.status(200).send(tags));
 });
