@@ -19,7 +19,7 @@ const getTodaysFactsCall = getCall(api => api.GetTodaysFacts.bind(api));
 const addFact = getCall(api => api.AddFact.bind(api));
 
 const tagListToTagString = tag => `#${tag} `;
-const factToFactString = fact => `${fact.activity}@${fact.category}, ${fact.tags.map(tagListToTagString)}`;
+const factToFactString = fact => `${fact.name}@${fact.category}, ${fact.tags.map(tagListToTagString)}`;
 
 class Hamster {
 
@@ -68,7 +68,7 @@ class Hamster {
 
     addFact(fact) {
         return addFact()
-          .then(factCall => factCall(factToFactString(fact), fact.startTime, fact.endTime, false))
+          .then(factCall => factCall(factToFactString(fact), fact.startEpoch, fact.endEpoch, false))
           .then(response => ({id: response}))
           .catch(err => err);
     }
