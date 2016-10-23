@@ -12,7 +12,7 @@ router.route('/tags').get((req, res, next) => {
 
 router.route('/activities/:searchTerm?').get((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    hamster.getActivities(req.searchTerm).then(activities => res.status(200).send(activities));
+    hamster.getActivities(req.params.searchTerm).then(activities => res.status(200).send(activities));
 });
 
 router.route('/facts/today').get((req, res, next) => {
