@@ -49,9 +49,8 @@ class Hamster {
                   endEpoch: fact[2],
                   totalSeconds: fact[9],
                   description: fact[3],
-                  name: fact[4],
-                  category: fact[6],
-                  tags: fact[7],
+                  activity: {name: fact[4], category: fact[6]},
+                  tags: fact[7].map(tagName => ({name: tagName, id: null})), // Unfortunately, the api doesn't return tag objects here
                   dayStart: fact[8]
               }))
           })
