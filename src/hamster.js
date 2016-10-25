@@ -16,7 +16,8 @@ const getCall = (apiGetter) => () => hamsterApi().then(api => Promise.denodeify(
 const getTagsCall = getCall(api => api.GetTags.bind(api, true));
 const getActivitiesCall = getCall(api => api.GetActivities.bind(api));
 const getTodaysFactsCall = getCall(api => api.GetTodaysFacts.bind(api));
-const addFact = getCall(api => api.AddFact.bind(api));
+const addFactCall = getCall(api => api.AddFact.bind(api));
+const stopTrackingCall = getCall(api => api.StopTracking.bind(api));
 
 const tagListToTagString = tag => `#${tag} `;
 const factToFactString = fact => `${fact.name}@${fact.category}, ${fact.tags.map(tagListToTagString)}`;
@@ -26,16 +27,14 @@ class Hamster {
     getTags() {
         return getTagsCall()
           .then(tagsCall => tagsCall())
-          .then(tags => tags.map(tagResult => ({id: tagResult[0], name: tagResult[1]})))
-          .catch(err => err);
+          .then(tags => tags.map(tagResult => ({id: tagResult[0], name: tagResult[1]})));
 
     }
 
     getActivities(searchTerm) {
         return getActivitiesCall()
           .then(activitiesCall => activitiesCall(searchTerm || ''))
-          .then(activities => activities.map(activity => ({name: activity[0], category: activity[1]})))
-          .catch(err => err);
+          .then(activities => activities.map(activity => ({name: activity[0], category: activity[1]})));
     }
 
     getTodaysFacts() {
@@ -53,26 +52,38 @@ class Hamster {
                   tags: fact[7].map(tagName => ({name: tagName, id: null})), // Unfortunately, the api doesn't return tag objects here
                   dayStart: fact[8]
               }))
-          })
-          .catch(err => err);
+          });
     }
 
     createTag(tag) {
         return getTagsCall()
           .then(tagsCall => tagsCall())
-          .then(tags => tags.map(tagResult => ({id: tagResult[0], name: tagResult[1]})))
-          .catch(err => err);
+          .then(tags => tags.map(tagResult => ({id: tagResult[0], name: tagResult[1]})));
 
     }
 
     addFact(fact) {
-        return addFact()
+        return addFactCall()
           .then(factCall => factCall(factToFactString(fact), fact.startEpoch, fact.endEpoch, false))
-          .then(response => ({id: response}))
-          .catch(err => err);
+          .then(response => ({id: response}));
     }
 
-    static api(){
+    stopTracking() {
+        let now = new Date();
+        let epochMillis = Date.UTC(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          now.getHours(),
+          now.getMinutes(),
+          now.getSeconds());
+        let epochSeconds = Math.floor(epochMillis / 1000);
+        return stopTrackingCall()
+          .then(stopTrackingCall => stopTrackingCall(['i', epochSeconds]))
+          .then(nothing => ({endEpoch: epochSeconds}));
+    }
+
+    static api() {
         return hamsterApi();
     }
 }
