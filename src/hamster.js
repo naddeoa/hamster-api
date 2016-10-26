@@ -19,8 +19,8 @@ const getTodaysFactsCall = getCall(api => api.GetTodaysFacts.bind(api));
 const addFactCall = getCall(api => api.AddFact.bind(api));
 const stopTrackingCall = getCall(api => api.StopTracking.bind(api));
 
-const tagListToTagString = tag => `#${tag} `;
-const factToFactString = fact => `${fact.name}@${fact.category}, ${fact.tags.map(tagListToTagString)}`;
+const tagListToTagString = tag => `#${tag.name} `;
+const factToFactString = fact => `${fact.activity.name}@${fact.activity.category}, ${fact.tags.map(tagListToTagString)}`;
 
 class Hamster {
 
@@ -65,7 +65,7 @@ class Hamster {
     addFact(fact) {
         return addFactCall()
           .then(factCall => factCall(factToFactString(fact), fact.startEpoch, fact.endEpoch, false))
-          .then(response => ({id: response}));
+          .then(id => ( Object.assign({id: id}, fact)));
     }
 
     stopTracking() {
