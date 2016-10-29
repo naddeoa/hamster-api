@@ -22,6 +22,19 @@ const stopTrackingCall = getCall(api => api.StopTracking.bind(api));
 const tagListToTagString = tag => `#${tag.name} `;
 const factToFactString = fact => `${fact.activity.name}@${fact.activity.category}, ${fact.tags.map(tagListToTagString)}`;
 
+function currentTimeEpoch(){
+    let now = new Date();
+    let epochMillis = Date.UTC(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds());
+    let epochSeconds = Math.floor(epochMillis / 1000);
+    return epochSeconds;
+}
+
 class Hamster {
 
     getTags() {
@@ -64,7 +77,7 @@ class Hamster {
 
     addFact(fact) {
         return addFactCall()
-          .then(factCall => factCall(factToFactString(fact), fact.startEpoch, fact.endEpoch, false))
+          .then(factCall => factCall(factToFactString(fact), fact.startEpoch || currentTimeEpoch(), fact.endEpoch, false))
           .then(id => ( Object.assign({id: id}, fact)));
     }
 
