@@ -57,8 +57,8 @@ class Hamster {
               return facts.map(fact => ({
                   id: fact[0],
                   activityId: fact[5],
-                  startEpoch: fact[1],
-                  endEpoch: fact[2],
+                  startEpoch: fact[1] * 1000,
+                  endEpoch: fact[2] * 1000,
                   totalSeconds: fact[9],
                   description: fact[3],
                   activity: {name: fact[4], category: fact[6]},
@@ -82,15 +82,7 @@ class Hamster {
     }
 
     stopTracking() {
-        let now = new Date();
-        let epochMillis = Date.UTC(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          now.getHours(),
-          now.getMinutes(),
-          now.getSeconds());
-        let epochSeconds = Math.floor(epochMillis / 1000);
+        let epochSeconds = currentTimeEpoch();
         return stopTrackingCall()
           .then(stopTrackingCall => stopTrackingCall(['i', epochSeconds]))
           .then(nothing => ({endEpoch: epochSeconds}));
